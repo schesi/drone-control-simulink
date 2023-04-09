@@ -28,12 +28,19 @@ Now you need to download this repository into **~/git_repos** folder. It would m
 
 We now need to link the nodes from the **drone-control-simulink** repository (I am very tired and not a lot of fantasy in choosing names) to our local ROS environment.
 
-All the nodes in the catkin workspace should be symbolic lynks. Doing so allows great flexibility since each node can be easily added or removed without the need to commit changes to the repository. For example let's go into the catkin source folder by typing
+The ROS environment is what allows us to compile the code inside the nodes. Usually this code is then compiled and the environment variables are stored in the system. If the environment setting has been deleted it is possible to set it back again using the following steps. Let’s type the following command the the terminal:
 ```
-cd ~/catkin_ws/src
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/
+catkin_make
 ```
-If you don't have this environment setup please follow the instructions here [link](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
-Please use the same environment as described in the tutorial.
+If you don't have this environment setup please follow the instructions here [link](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).Please use the same environment as described in the tutorial.
+
+Now download the repository of PX4 from this [link](https://github.com/PX4/PX4-Autopilot) in the **~/git_repos/** folder by typing
+```
+git clone https://github.com/PX4/PX4-Autopilot.git --recursive
+```
+
 
 ### Compiling ROS Nodes
 
