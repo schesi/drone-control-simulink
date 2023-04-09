@@ -11,8 +11,6 @@ Specifically this repository includes:
 ## Simulator setup
 The first step (if not done already) is to setup the ROS environment. The instruction on how to setup ROS invironment can be found at this [link](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
 
-
-
 ### Installing dependencies
 First let's install mavros by typing
 ```
@@ -46,8 +44,7 @@ Also if you don't have the catkin tools installed you can do that by doing
 sudo apt-get update
 sudo apt-get install python3-catkin-tools
 ```
-
-### Compiling ROS Nodes
+### Compiling the ROS Nodes
 The first step is to link the simulator folder to the **catkin_w** workspace. In order to do this type
 ```
 cd ~/catkin_ws/src
@@ -83,7 +80,7 @@ Finished  <<< px4_simulink_mavros                  [ 3.1 seconds ]
 [build] Note: Workspace packages have changed, please re-source setup files to use them.
 simone@devpc:~/catkin_ws$
 ```
-### Activating the Simulator Node
+## Activating the Simulator Node
 First we will activate the simulator node. This step can be done by following the instruction at this [link](https://docs.px4.io/main/en/simulation/ros_interface.html). Where the following commands should be issued:
 ```
 cd ~/git_repos/PX4-Autopilot
@@ -103,3 +100,55 @@ rostopic echo /drone_01/mavros/imu/data_raw
 ```
 and the following window should appear:
 ![](./docs/img/fig2.png)
+
+## The Simulink Model
+The simulink model is located at this [link](https://github.com/schesi/drone-control-simulink/tree/main/nodes/px4_simulink_mavros/src/matlab_simulink).
+This model is composed of two main subsystems. The Simulator_sub (used to simulate the system dynamics) and the GNC_sub (used to generate the control action and the target position). The simulator subsystem (Simulator_Sub) is a simplified model of a 3DOF model. A simple point mass subject to F=ma that can move in three directions. Furthermore, the mass is subject to a viscous friction that is opposite to the point mass motion. In order to display the signals properties and dimensions in the simulink model open the
+- Display-> Signals & Ports->Signal Dimensions
+- Display-> Signals & Ports->Port Data Types
+![](./docs/img/fig3.png)
+
+The inputs and outputs of the Simulator_sub are shown below
+***Input***
+- Controller_cmd        -     [3,1], double, array representing the controller action (force)
+
+***Output***
+- pos_xyz 	- 	[3,1], double, array representing the drone position
+- vel_xyz 	- 	[3,1], double, array representing the drone position
+- wps 	- 	[3,2], double, matrix representing the waypoints of the patrol area. Each column is a 3x1 waypoint (x,y,z)
+- flag_detect 	- 	[1,1], boolean, flag that represents the detection of an object (1=Detected, 0=Not detected)
+
+The guidance navigation and control subsystem (GNC_Sub) provides the control action to the simulator subsystem. The navigation is not performed in this example (it is assumed that the position is always known). The guidance and control is performed by two subsystems inside the GNC_Sub. The two subsystems are shown in the picture below
+![](./docs/img/fig4.png)
+On the left side is the guidance subsystem (guidance_sub). This subsystem receives as input the position and velocity of the quadcopter, it compares with the required patrol waypoints and determines which waypoint should be the target waypoint. In this example if the position of the quadcopter is closer to WPS1 the quadcopter goes to WPS1. When ||quadcopter position - WPS1 || < threshold the target waypoint changes to WPS2. In the same fashion the guidance node keeps moving the quadcopter between these two waypoints. If flag_detect becomes equal to 1. The guidance set the target_pos_xyz to the quadcopter position at the time of the triggering event. This simulates object detection.
+The guidance_sub is the subsystem we are going to generate code from. For this reason this subsystem has been converted to a reference model.
+The control subsystem (controller_sub) receives as input the position and velocity of the quadcopter together with the target location. A simple PD controller generates the forces that are sent to the simulator and integrated with the differential equations describing the object of the point mass particle motion (the quadcopter).
+Before running the simulink model all the variables need to be initialized. This can be done by typing
+```
+quad_simulator_init
+```
+In the Matlab Command Window. The initialization file places all the variables in two structures as shown in the code below. It is strongly recommended to use structures so that all the variables of one subsystem can be differentiated from the variables related to the other subsystems as shown below:
+```
+clear all;
+close all;
+%% Init file for simulator
+% Simulator parameters
+simulator.dt = 1/100;
+simulator.x0 = [0,0,0,1,2,-1]';
+simulator.flag_detect = timeseries(logical([0 1]),[0 100]);
+simulator.wps = [0   40
+             	0   -100
+             	40   40];
+
+% GNC Sub parameters
+gnc_sub.controller.kp = 0.8;
+gnc_sub.controller.kd = 4;
+gnc_sub.guidance.dt = 1/20; %[hz]
+```
+We can now run the simulink model and open the scope ‘Monitor’ inside the simulator subsystem.
+![](./docs/img/fig5.png)
+The top graph shows the drone position. As time passes the drone keeps moving between two waypoints at the same altitude. This can be seen since the x,y position periodically goes back while the z axis converges to a constant value. Once the flag detection goes to 1 the drone goes back to the exact position logged when the flag was triggered. This can be seen by closely inspecting the x,y, position since these values go back at exactly the intersection of 100s.
+### How to Generate the Flight Code
+The next sections describe the steps required to generate and integrate the code from the simulink model to the ROS Node. The reader should be able to follow the steps in order to create a model, generate the code, inspect the code and wrap the generated code into a simulink model.
+...
+...
