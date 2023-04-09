@@ -87,6 +87,7 @@ simone@devpc:~/catkin_ws$
 First we will activate the simulator node. This step can be done by following the instruction at this [link](https://docs.px4.io/main/en/simulation/ros_interface.html). Where the following commands should be issued:
 ```
 cd ~/git_repos/PX4-Autopilot
+DONT_RUN=1 make px4_sitl_default gazebo-classic
 source ~/catkin_ws/devel/setup.bash    # (optional)
 source Tools/simulation/gazebo-classic/setup_gazebo.bash $(pwd) $(pwd)/build/px4_sitl_default
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$(pwd)
@@ -96,3 +97,9 @@ Furthermore the ground station control software QgroundControl should be launche
 ```
 roslaunch flight_simulator single_quadcopter_baylands.launch
 ```
+now this window should appear ![](./docs/img/fig1.png). Now a virtual drone connected to a physics engine is running a simulated PX4 firmware and it can commanded via the usual QGroundcontrol interface or can be run via mavros commands. For example, to check the IMU sensor data you can type:
+```
+rostopic echo /drone_01/mavros/imu/data_raw
+```
+and the following window should appear:
+![](./docs/img/fig2.png)
