@@ -1,15 +1,16 @@
 # Drone Control via Matlab  & Simulink in ROS Gazebo
-This repository contains the code related to the operation of a quadcopert in a 3D virtual world via a guidance algorithm designed in Simulink and then translated in C++ via autocode generation procedure.
-This guidance algorithm will make the quadcopter perform a search between two waypoints and then a simulated detection is assumed after a certain amount of time.
-Specifically this repository includes:
- - The Simulink model of the guidance algorithm
- - The ROS node that initialize the 3D simulator
- - The ROS node that contains the C++ code generated via simulink autocode
+This repository holds the code for operating a quadcopter in a 3D virtual environment using a guidance algorithm designed in Simulink and then translated into C++ via an autocode generation procedure. The guidance algorithm is intended to prompt the quadcopter to conduct a search between two waypoints, followed by a simulated detection after a certain time period.
+
+The repository comprises the following components:
+- The Simulink model for the guidance algorithm
+- A ROS node responsible for initializing the 3D simulator
+- Another ROS node that contains the C++ code produced through Simulink autocode generation.
+
 
 ## Repository Structure
 
 ## Simulator setup
-The first step (if not done already) is to setup the ROS environment. The instruction on how to setup ROS invironment can be found at this [link](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
+Before proceeding, make sure to set up the ROS environment if it has not already been done. Detailed instructions on how to set up the ROS environment can be found at the following [link](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
 
 ### Installing dependencies
 First let's install mavros by typing
@@ -22,11 +23,11 @@ wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/inst
 sudo bash ./install_geographiclib_datasets.sh   
 ```
 
-Now you need to download this repository into **~/git_repos** folder. It would make your life easier later.
+To simplify future tasks, download this repository into the ***~/git_repos*** folder.
 
-We now need to link the nodes from the **drone-control-simulink** repository (I am very tired and not a lot of fantasy in choosing names) to our local ROS environment.
+Next, we must link the nodes from the ***drone-control-simulink*** repository (I apologize for the unoriginal naming) to our local ROS environment.
 
-The ROS environment is what allows us to compile the code inside the nodes. Usually this code is then compiled and the environment variables are stored in the system. If the environment setting has been deleted it is possible to set it back again using the following steps. Let’s type the following command the the terminal:
+The ROS environment facilitates the compilation of the code within the nodes. Once compiled, the environment variables are typically stored in the system. If the environment settings have been deleted, they can be restored by following these steps: Open the terminal and enter the following command:
 ```
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/
