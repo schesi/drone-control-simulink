@@ -1,4 +1,4 @@
-# Drone Control via Matlab  & Simulink in ROS Gazebo
+# Drone Control via Matlab  & Simulink in ROS
 This repository holds the code for operating a quadcopter in a 3D virtual environment using a guidance algorithm designed in Simulink and then translated into C++ via an autocode generation procedure. The guidance algorithm is intended to prompt the quadcopter to conduct a search between two waypoints, followed by a simulated detection after a certain time period.
 
 The repository comprises the following components:
