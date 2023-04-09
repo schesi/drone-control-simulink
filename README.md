@@ -107,6 +107,18 @@ First make sure that the ***catkin build***  command compiles the node successfu
 ```
 rosrun px4_simulink_mavros px4_simulink_mavros_node
 ```
+In this case we are not launching a launch file since this has not been created yet. A launch file is just a wrapper that launch a node with a specific set of variables (topics name, node name, remapping etc)
+![](./docs/img/fig6.png)
+Once the node is initialized the drone will start to patrol between the two waypoints. In the code we have artificially added a flag that simulates the detection of an object. This flag should come from an object detection node when a specific object is detected.  If QGroundcontrol is open you should see the trajectory of the drone on the map as shown below. Furthermore, QGroundcontrol will notify you that the quadcopter has been changed into ‘OFFBOARD’ mode. This mode is essential to be able to control the autopilot (and the quadcopter) from the companion computer. More information about this mode can be found at https://docs.px4.io/main/en/flight_modes/offboard.html
+![](./docs/img/fig7.png)
+After 55 seconds as specified in the code
+```
+ros::Duration delta_t(55.0);
+```
+The quadcopter will stop at that instantaneous location as shown below
+![](./docs/img/fig8.png)
+For the sake of simplicity, the guidance node will output on the activation terminal a notification that an object has been detected. Specifically, after 55 seconds you should see the notification below
+![](./docs/img/fig9.png)
 
 ## The Simulink Model
 The simulink model is located at this [link](https://github.com/schesi/drone-control-simulink/tree/main/nodes/px4_simulink_mavros/src/matlab_simulink).

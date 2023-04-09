@@ -41,7 +41,7 @@ void QuadGuidance::CheckStatus(){
           (ros::Time::now() - last_request > ros::Duration(5.0))){
           if( arming_client.call(arm_cmd) &&
               arm_cmd.response.success){
-              ROS_INFO("Unit01 armed");
+              ROS_INFO("Drone_01 armed");
           }
           last_request = ros::Time::now();
       }
@@ -68,36 +68,31 @@ void QuadGuidance::read_pose(const geometry_msgs::PoseStamped::ConstPtr& msg){
   data->guidance_sub_U.pos_xyz[1] = current_pose.pose.position.y;
   data->guidance_sub_U.pos_xyz[2] = current_pose.pose.position.z;
 
-
 }
 
 void QuadGuidance::GuidancePublisher(){
   local_pos_pub = nh.advertise<geometry_msgs::PoseStamped>
-          ("nps_unit01/mavros/setpoint_position/local", 1);
-
-
+          ("drone_01/mavros/setpoint_position/local", 1);
 }
 
 void QuadGuidance::PublishMessage(geometry_msgs::PoseStamped pose){
   local_pos_pub.publish(pose);
-
 }
 
 void QuadGuidance::GuidanceSubscriber(guidance_subModelClass* simulink_Obj){
   data = simulink_Obj;
   current_state_sub = nh.subscribe<geometry_msgs::PoseStamped>
-          ("/nps_unit01/mavros/local_position/pose",1,&QuadGuidance::read_pose,this);
-
+          ("/drone_01/mavros/local_position/pose",1,&QuadGuidance::read_pose,this);
   state_sub = nh.subscribe<mavros_msgs::State>
-          ("nps_unit01/mavros/state", 10, &QuadGuidance::state_cb,this);
+          ("drone_01/mavros/state", 10, &QuadGuidance::state_cb,this);
 
 }
 
 void QuadGuidance::GuidanceServiceClient(){
   arming_client = nh.serviceClient<mavros_msgs::CommandBool>
-          ("nps_unit01/mavros/cmd/arming");
+          ("drone_01/mavros/cmd/arming");
 
   set_mode_client = nh.serviceClient<mavros_msgs::SetMode>
-                  ("nps_unit01/mavros/set_mode");
+                  ("drone_01/mavros/set_mode");
 
 }
